@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium\\Helium.csproj": {}
+    "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium.csproj": {}
   },
   "projects": {
-    "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium\\Helium.csproj": {
+    "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium\\Helium.csproj",
+        "projectUniqueName": "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium.csproj",
         "projectName": "Helium",
-        "projectPath": "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium\\Helium.csproj",
+        "projectPath": "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium.csproj",
         "packagesPath": "C:\\Users\\sshaw\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium\\obj\\",
+        "outputPath": "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Users\\sshaw\\AppData\\Roaming\\Godot\\mono\\GodotNuGetFallbackFolder",

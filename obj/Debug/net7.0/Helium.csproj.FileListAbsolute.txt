@@ -12,3 +12,17 @@ c:\Users\sshaw\OneDrive\Desktop\Helium\Helium\obj\Debug\net7.0\refint\Helium.dll
 c:\Users\sshaw\OneDrive\Desktop\Helium\Helium\obj\Debug\net7.0\Helium.pdb
 c:\Users\sshaw\OneDrive\Desktop\Helium\Helium\obj\Debug\net7.0\Helium.genruntimeconfig.cache
 c:\Users\sshaw\OneDrive\Desktop\Helium\Helium\obj\Debug\net7.0\ref\Helium.dll
+C:\Users\sshaw\OneDrive\Desktop\Helium\bin\Debug\net7.0\Helium.exe
+C:\Users\sshaw\OneDrive\Desktop\Helium\bin\Debug\net7.0\Helium.deps.json
+C:\Users\sshaw\OneDrive\Desktop\Helium\bin\Debug\net7.0\Helium.runtimeconfig.json
+C:\Users\sshaw\OneDrive\Desktop\Helium\bin\Debug\net7.0\Helium.dll
+C:\Users\sshaw\OneDrive\Desktop\Helium\bin\Debug\net7.0\Helium.pdb
+C:\Users\sshaw\OneDrive\Desktop\Helium\obj\Debug\net7.0\Helium.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sshaw\OneDrive\Desktop\Helium\obj\Debug\net7.0\Helium.AssemblyInfoInputs.cache
+C:\Users\sshaw\OneDrive\Desktop\Helium\obj\Debug\net7.0\Helium.AssemblyInfo.cs
+C:\Users\sshaw\OneDrive\Desktop\Helium\obj\Debug\net7.0\Helium.csproj.CoreCompileInputs.cache
+C:\Users\sshaw\OneDrive\Desktop\Helium\obj\Debug\net7.0\Helium.dll
+C:\Users\sshaw\OneDrive\Desktop\Helium\obj\Debug\net7.0\refint\Helium.dll
+C:\Users\sshaw\OneDrive\Desktop\Helium\obj\Debug\net7.0\Helium.pdb
+C:\Users\sshaw\OneDrive\Desktop\Helium\obj\Debug\net7.0\Helium.genruntimeconfig.cache
+C:\Users\sshaw\OneDrive\Desktop\Helium\obj\Debug\net7.0\ref\Helium.dll

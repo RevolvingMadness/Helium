@@ -15,11 +15,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium\\Helium.csproj",
+      "projectUniqueName": "C:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium.csproj",
       "projectName": "Helium",
-      "projectPath": "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium\\Helium.csproj",
+      "projectPath": "C:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium.csproj",
       "packagesPath": "C:\\Users\\sshaw\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\Helium\\obj\\",
+      "outputPath": "C:\\Users\\sshaw\\OneDrive\\Desktop\\Helium\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Users\\sshaw\\AppData\\Roaming\\Godot\\mono\\GodotNuGetFallbackFolder",
