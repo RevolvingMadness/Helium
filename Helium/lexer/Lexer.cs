@@ -1,17 +1,16 @@
-using System.Runtime.InteropServices;
-
 namespace Helium.lexer
 {
     class Lexer
     {
-        string input;
-        int position;
+        readonly string input;
+        int position = 0;
         Dictionary<char, TokenType> charMap;
+        int column = 0;
+        readonly int errorWidth = 5;
 
         public Lexer(string input)
         {
             this.input = input;
-            position = 0;
             charMap = new()
             {
                 { '=', TokenType.EQUALS },
@@ -48,13 +47,61 @@ namespace Helium.lexer
                     if (charMap.ContainsKey(Current()))
                     {
                         tokens.Add(new Token(charMap.GetValueOrDefault(Consume())));
-                        continue;
                     }
-                    throw new Exception("Unknown character '" + Current() + "'");
+                    else
+                    {
+                        ThrowError("Unknown character '" + Current() + "'");
+                    }
+
                 }
+
+                column += 1;
             }
 
             return tokens;
+        }
+
+        private void ThrowError(string message)
+        {
+            string bounds = "";
+
+            int leftBound;
+            int rightBound;
+
+            for (leftBound = 0; leftBound < errorWidth; leftBound++)
+            {
+                if (column - leftBound - 1 < 0)
+                {
+                    break;
+                }
+
+                bounds += input[column - leftBound - 1];
+            }
+
+            bounds += input[column];
+
+            for (rightBound = 0; rightBound < errorWidth; rightBound++)
+            {
+                if (column + rightBound + 1 > input.Length - 1)
+                {
+                    break;
+                }
+
+                bounds += input[column + rightBound + 1];
+            }
+
+            Console.Error.WriteLine(message + ":");
+            Console.Error.WriteLine(bounds);
+
+            Console.Error.Write(new string('^', leftBound));
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.Write('^');
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.Error.Write(new string('^', rightBound));
+
+            Environment.Exit(1);
         }
 
         private Token LexDigit()
