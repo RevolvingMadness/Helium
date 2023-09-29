@@ -54,8 +54,6 @@ namespace Helium.lexer
                     }
 
                 }
-
-                column += 1;
             }
 
             return tokens;
@@ -63,43 +61,25 @@ namespace Helium.lexer
 
         private void ThrowError(string message)
         {
-            string bounds = "";
+            string code = "";
 
-            int leftBound;
-            int rightBound;
-
-            for (leftBound = 0; leftBound < errorWidth; leftBound++)
-            {
-                if (column - leftBound - 1 < 0)
-                {
-                    break;
-                }
-
-                bounds += input[column - leftBound - 1];
+            for (int i = errorWidth; i > 0; i--) {
+                code += input[column-i];
             }
 
-            bounds += input[column];
+            code += input[column];
 
-            for (rightBound = 0; rightBound < errorWidth; rightBound++)
-            {
-                if (column + rightBound + 1 > input.Length - 1)
-                {
-                    break;
-                }
-
-                bounds += input[column + rightBound + 1];
+            for (int i = 1; i <= errorWidth; i++) {
+                code += input[column+i];
             }
 
             Console.Error.WriteLine(message + ":");
-            Console.Error.WriteLine(bounds);
-
-            Console.Error.Write(new string('^', leftBound));
-
+            Console.Error.WriteLine(code);
+            Console.Error.Write(new string('^', errorWidth));
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Error.Write('^');
-            Console.ForegroundColor = ConsoleColor.White;
-
-            Console.Error.Write(new string('^', rightBound));
+            Console.ResetColor();
+            Console.Error.WriteLine(new string('^', errorWidth));
 
             Environment.Exit(1);
         }
@@ -144,6 +124,7 @@ namespace Helium.lexer
             char character = Current();
 
             position++;
+            column++;
 
             return character;
         }
