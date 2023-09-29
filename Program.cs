@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using Helium.lexer;
+using Helium.parser;
+using Helium.parser.nodes;
 
 namespace Helium
 {
@@ -25,6 +27,11 @@ namespace Helium
             List<Token> tokens = lexer.Lex();
 
             Console.WriteLine(ToString(tokens));
+
+            Parser parser = new(tokens);
+            ProgramNode programNode = parser.Parse();
+
+            Console.WriteLine(NodePrinter.NodeToString(programNode));
         }
 
         private static string ToString(List<Token> tokens)

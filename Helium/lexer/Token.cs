@@ -2,8 +2,8 @@ namespace Helium.lexer
 {
     class Token
     {
-        TokenType type;
-        object? value;
+        public readonly TokenType type;
+        public readonly object value;
 
         public Token(TokenType type, object value)
         {

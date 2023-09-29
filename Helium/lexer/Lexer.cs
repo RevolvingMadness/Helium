@@ -6,7 +6,6 @@ namespace Helium.lexer
         int position = 0;
         Dictionary<char, TokenType> charMap;
         int column = 0;
-        readonly int errorWidth = 5;
 
         public Lexer(string input)
         {
@@ -50,38 +49,15 @@ namespace Helium.lexer
                     }
                     else
                     {
-                        ThrowError("Unknown character '" + Current() + "'");
+                        throw new Exception("Unknown character '" + Current() + "'");
                     }
 
                 }
             }
 
+            tokens.Add(new Token(TokenType.EOF));
+
             return tokens;
-        }
-
-        private void ThrowError(string message)
-        {
-            string code = "";
-
-            for (int i = errorWidth; i > 0; i--) {
-                code += input[column-i];
-            }
-
-            code += input[column];
-
-            for (int i = 1; i <= errorWidth; i++) {
-                code += input[column+i];
-            }
-
-            Console.Error.WriteLine(message + ":");
-            Console.Error.WriteLine(code);
-            Console.Error.Write(new string('^', errorWidth));
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.Write('^');
-            Console.ResetColor();
-            Console.Error.WriteLine(new string('^', errorWidth));
-
-            Environment.Exit(1);
         }
 
         private Token LexDigit()
@@ -141,7 +117,7 @@ namespace Helium.lexer
 
         private bool IsNotEOF()
         {
-            return position <= input.Length - 1;
+            return position < input.Length;
         }
     }
 }
