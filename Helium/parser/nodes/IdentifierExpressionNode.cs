@@ -1,13 +1,12 @@
-using Helium.parser.nodes;
-
-namespace Helium.parser.nodes {
+namespace Helium.parser.nodes
+{
     class IdentifierExpressionNode : ExpressionNode
     {
-        public readonly string identifier;
-        
+        public readonly string value;
+
         public IdentifierExpressionNode(string identifier)
         {
-            this.identifier = identifier;
+            this.value = identifier;
         }
     }
 }

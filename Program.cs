@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Helium.compiler;
 using Helium.lexer;
 using Helium.parser;
 using Helium.parser.nodes;
@@ -15,6 +16,8 @@ namespace Helium
             }
 
             string path = args[0];
+            path = path.Replace("\\", "/");
+            string name = path.Split("/")[^1].Split(".")[0];
 
             if (!File.Exists(path))
             {
@@ -26,28 +29,11 @@ namespace Helium
             Lexer lexer = new(input);
             List<Token> tokens = lexer.Lex();
 
-            Console.WriteLine(ToString(tokens));
-
             Parser parser = new(tokens);
             ProgramNode programNode = parser.Parse();
 
-            Console.WriteLine(NodePrinter.NodeToString(programNode));
-        }
-
-        private static string ToString(List<Token> tokens)
-        {
-            string str = "[";
-
-            foreach (object obj in tokens)
-            {
-                str += obj.ToString() + ", ";
-            }
-
-            str = str[..^2];
-
-            str += "]";
-
-            return str;
+            Compiler compiler = new(programNode);
+            compiler.Compile();
         }
     }
 }

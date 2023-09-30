@@ -1,5 +1,7 @@
-namespace Helium.parser.nodes {
-    abstract class StatementNode : Node {
-        
-    }    
+namespace Helium.parser.nodes
+{
+    abstract class StatementNode : Node
+    {
+
+    }
 }

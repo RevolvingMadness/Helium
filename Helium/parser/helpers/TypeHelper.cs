@@ -1,21 +1,16 @@
 using Helium.parser;
 
-namespace Helium.parser.helpers {
+namespace Helium.parser.helpers
+{
     class TypeHelper
     {
-        public static Type fromString(string stringType) {
-            Type type;
-
-            switch (stringType)
+        public static VariableType FromString(string stringType)
+        {
+            return stringType switch
             {
-                case "int":
-                    type = Type.INTEGER;
-                    break;
-                default:
-                    throw new Exception("Unknown type '" + stringType + "'");
-            }
-
-            return type;
+                "int" => VariableType.INTEGER,
+                _ => throw new Exception("Unknown type '" + stringType + "'"),
+            };
         }
     }
 }

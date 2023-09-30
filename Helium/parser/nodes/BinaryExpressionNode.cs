@@ -7,7 +7,7 @@ namespace Helium.parser.nodes
         public readonly ExpressionNode left;
         public readonly TokenType op;
         public readonly ExpressionNode right;
-        
+
         public BinaryExpressionNode(ExpressionNode left, TokenType op, ExpressionNode right)
         {
             this.left = left;
