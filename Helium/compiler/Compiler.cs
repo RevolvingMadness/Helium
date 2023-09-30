@@ -33,7 +33,7 @@ namespace Helium.compiler
             Console.WriteLine("Emitted IR:");
             Console.WriteLine(module.PrintToString());
 
-            module.WriteBitcodeToFile(moduleName + ".bc");
+            module.WriteBitcodeToFile("build/" + moduleName + ".bc");
         }
 
         private void CompileProgramNode(ProgramNode programNode)
