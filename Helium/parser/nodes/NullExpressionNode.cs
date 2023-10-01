@@ -3,13 +3,11 @@ using Helium.compiler;
 
 namespace Helium.parser.nodes
 {
-    class IntegerExpressionNode : ExpressionNode
+    class NullExpressionNode : ExpressionNode
     {
-        public readonly int value;
-
-        public IntegerExpressionNode(int value)
+        public NullExpressionNode()
         {
-            this.value = value;
+
         }
 
         public override object ToValueRef(ProgramNode program)

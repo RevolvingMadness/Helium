@@ -1,6 +1,6 @@
-using Helium.parser;
+using Helium.compiler;
 
-namespace Helium.parser.helpers
+namespace Helium.parser
 {
     class TypeHelper
     {
@@ -9,6 +9,9 @@ namespace Helium.parser.helpers
             return stringType switch
             {
                 "int" => VariableType.INTEGER,
+                "float" => VariableType.FLOAT,
+                "boolean" => VariableType.BOOLEAN,
+                "string" => VariableType.STRING,
                 _ => throw new Exception("Unknown type '" + stringType + "'"),
             };
         }

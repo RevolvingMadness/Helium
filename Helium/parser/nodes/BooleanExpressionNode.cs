@@ -3,11 +3,11 @@ using Helium.compiler;
 
 namespace Helium.parser.nodes
 {
-    class IntegerExpressionNode : ExpressionNode
+    class BooleanExpressionNode : ExpressionNode
     {
-        public readonly int value;
+        public readonly bool value;
 
-        public IntegerExpressionNode(int value)
+        public BooleanExpressionNode(bool value)
         {
             this.value = value;
         }
@@ -19,7 +19,7 @@ namespace Helium.parser.nodes
 
         public override VariableType ToTypeRef(ProgramNode program)
         {
-            return VariableType.INTEGER;
+            return VariableType.BOOLEAN;
         }
     }
 }

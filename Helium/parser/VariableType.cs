@@ -1,7 +1,9 @@
 namespace Helium.parser
 {
-    enum VariableType
+    enum VariableType1
     {
-        INTEGER
+        INTEGER,
+        FLOAT,
+        BOOLEAN
     }
 }

@@ -1,23 +1,24 @@
+using Helium.helpers;
 using Helium.lexer;
 using Helium.parser.nodes;
-using Helium.parser.helpers;
-using Helium.helpers;
 
 namespace Helium.parser
 {
     class Parser
     {
         private readonly List<Token> tokens;
+        private readonly string moduleName;
         private int position = 0;
 
-        public Parser(List<Token> tokens)
+        public Parser(List<Token> tokens, string moduleName)
         {
             this.tokens = tokens;
+            this.moduleName = moduleName;
         }
 
         public ProgramNode Parse()
         {
-            ProgramNode programNode = new();
+            ProgramNode programNode = new(moduleName);
 
             while (IsNotEOF())
             {
@@ -77,12 +78,12 @@ namespace Helium.parser
         {
             if (Current(TokenType.IDENTIFIER))
             {
-                VariableType? type = null;
+                bool reassigning = true;
 
                 if (Next(TokenType.IDENTIFIER))
                 {
-                    string typeString = Consume(TokenType.IDENTIFIER).value as string ?? throw new Exception("Identifier value is null???");
-                    type = TypeHelper.FromString(typeString);
+                    Consume(TokenType.IDENTIFIER);
+                    reassigning = false;
                 }
 
                 string name = Consume(TokenType.IDENTIFIER).value as string ?? throw new Exception("Identifier value is null???");
@@ -92,7 +93,7 @@ namespace Helium.parser
                 {
                     Consume(TokenType.SEMICOLON);
 
-                    return new AssignmentStatementNode(type, name, null);
+                    return new AssignmentStatementNode(reassigning, name, new NullExpressionNode());
                 }
 
                 Consume(TokenType.EQUALS);
@@ -101,7 +102,17 @@ namespace Helium.parser
 
                 Consume(TokenType.SEMICOLON);
 
-                return new AssignmentStatementNode(type, name, expression);
+                return new AssignmentStatementNode(reassigning, name, expression);
+            }
+            else if (Current(TokenType.RETURN))
+            {
+                Consume(TokenType.RETURN);
+
+                ExpressionNode expression = ParseExpression();
+
+                Consume(TokenType.SEMICOLON);
+
+                return new ReturnStatementNode(expression);
             }
 
             throw new Exception("Expected Statement, got '" + Current().type + "'");
@@ -156,6 +167,35 @@ namespace Helium.parser
             else if (Current(TokenType.INTEGER))
             {
                 return new IntegerExpressionNode((int)Consume(TokenType.INTEGER).value);
+            }
+            else if (Current(TokenType.FLOAT))
+            {
+                return new FloatExpressionNode((float)Consume(TokenType.FLOAT).value);
+            }
+            else if (Current(TokenType.TRUE))
+            {
+                Consume(TokenType.TRUE);
+                return new BooleanExpressionNode(true);
+            }
+            else if (Current(TokenType.FALSE))
+            {
+                Consume(TokenType.FALSE);
+                return new BooleanExpressionNode(false);
+            }
+            else if (Current(TokenType.NULL))
+            {
+                Consume(TokenType.NULL);
+                return new NullExpressionNode();
+            }
+            else if (Current(TokenType.QUOTATIONMARK))
+            {
+                Consume(TokenType.QUOTATIONMARK);
+
+                string str = (string)Consume(TokenType.IDENTIFIER).value;
+
+                Consume(TokenType.QUOTATIONMARK);
+
+                return new StringExpressionNode(str);
             }
 
             throw new Exception("Expected Expression, got '" + Current().type + "'");

@@ -12,6 +12,11 @@ namespace Helium.lexer
         STAR,
         FSLASH,
         PERCENT,
-        SEMICOLON
+        SEMICOLON,
+        TRUE,
+        FALSE,
+        RETURN,
+        NULL,
+        QUOTATIONMARK
     }
 }

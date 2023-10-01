@@ -1,3 +1,4 @@
+using Helium.compiler;
 using Helium.lexer;
 
 namespace Helium.parser.nodes
@@ -13,6 +14,16 @@ namespace Helium.parser.nodes
             this.left = left;
             this.op = op;
             this.right = right;
+        }
+
+        public override object ToValueRef(ProgramNode program)
+        {
+            return new object();
+        }
+
+        public override VariableType ToTypeRef(ProgramNode program)
+        {
+            return left.ToTypeRef(program);
         }
     }
 }

@@ -4,18 +4,14 @@ namespace Helium.helpers
 {
     class TokenTypeHelper
     {
-        public static bool IsAdditiveOperator(TokenType op)
+        public static bool IsAdditiveOperator(TokenType type)
         {
-            return op == TokenType.PLUS || op == TokenType.HYPHEN;
-        }
-        public static bool IsMultiplicativeOperator(TokenType op)
-        {
-            return op == TokenType.STAR || op == TokenType.FSLASH || op == TokenType.PERCENT;
+            return type == TokenType.PLUS || type == TokenType.HYPHEN;
         }
 
-        public static bool IsBinaryOperator(TokenType op)
+        public static bool IsMultiplicativeOperator(TokenType type)
         {
-            return op == TokenType.PLUS || op == TokenType.HYPHEN || op == TokenType.STAR || op == TokenType.FSLASH || op == TokenType.PERCENT;
+            return type == TokenType.STAR || type == TokenType.FSLASH || type == TokenType.PERCENT;
         }
     }
 }

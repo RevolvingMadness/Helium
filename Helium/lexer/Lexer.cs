@@ -19,6 +19,8 @@ namespace Helium.lexer
                 { '/', TokenType.FSLASH },
                 { '%', TokenType.PERCENT },
 
+                { '"', TokenType.QUOTATIONMARK },
+
                 { ';', TokenType.SEMICOLON },
             };
         }
@@ -67,6 +69,16 @@ namespace Helium.lexer
 
             while (IsNotEOF() && (char.IsDigit(Current()) || Current() == '.'))
             {
+                if (Current() == '.')
+                {
+                    if (isFloat)
+                    {
+                        break;
+                    }
+
+                    isFloat = true;
+                }
+
                 digit += Consume();
             }
 
@@ -92,7 +104,14 @@ namespace Helium.lexer
                 identifier += Consume();
             }
 
-            return new Token(TokenType.IDENTIFIER, identifier);
+            return identifier switch
+            {
+                "return" => new Token(TokenType.RETURN),
+                "null" => new Token(TokenType.NULL),
+                "true" => new Token(TokenType.TRUE),
+                "false" => new Token(TokenType.FALSE),
+                _ => new Token(TokenType.IDENTIFIER, identifier)
+            };
         }
 
         private char Consume()

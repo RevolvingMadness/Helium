@@ -1,18 +1,19 @@
-using LLVMSharp.Interop;
 
 namespace Helium.compiler
 {
     class Variable
     {
-        public readonly LLVMTypeRef type;
+        public readonly VariableType type;
         public readonly string name;
-        public readonly LLVMValueRef value;
+        public object value;
+        public readonly object variableRef;
 
-        public Variable(LLVMTypeRef type, string name, LLVMValueRef value)
+        public Variable(VariableType type, string name, object value, object variableRef)
         {
             this.type = type;
             this.name = name;
             this.value = value;
+            this.variableRef = variableRef;
         }
     }
 }

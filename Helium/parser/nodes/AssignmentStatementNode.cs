@@ -1,18 +1,21 @@
-using Helium.parser;
-
 namespace Helium.parser.nodes
 {
     class AssignmentStatementNode : StatementNode
     {
-        public readonly VariableType? type;
+        public readonly bool reassigning;
         public readonly string name;
-        public readonly ExpressionNode? expression;
+        public readonly ExpressionNode expression;
 
-        public AssignmentStatementNode(VariableType? type, string name, ExpressionNode? expression)
+        public AssignmentStatementNode(bool reassigning, string name, ExpressionNode expression)
         {
-            this.type = type;
+            this.reassigning = reassigning;
             this.name = name;
             this.expression = expression;
+        }
+
+        public override void Gen(ProgramNode program)
+        {
+
         }
     }
 }

@@ -1,25 +1,24 @@
-
 using Helium.compiler;
 
 namespace Helium.parser.nodes
 {
-    class IntegerExpressionNode : ExpressionNode
+    class StringExpressionNode : ExpressionNode
     {
-        public readonly int value;
+        public readonly string value;
 
-        public IntegerExpressionNode(int value)
+        public StringExpressionNode(string value)
         {
             this.value = value;
         }
 
         public override object ToValueRef(ProgramNode program)
         {
-            return new object();
+            throw new NotImplementedException();
         }
 
         public override VariableType ToTypeRef(ProgramNode program)
         {
-            return VariableType.INTEGER;
+            return VariableType.STRING;
         }
     }
 }

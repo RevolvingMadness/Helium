@@ -3,11 +3,11 @@ using Helium.compiler;
 
 namespace Helium.parser.nodes
 {
-    class IntegerExpressionNode : ExpressionNode
+    class FloatExpressionNode : ExpressionNode
     {
-        public readonly int value;
+        public readonly float value;
 
-        public IntegerExpressionNode(int value)
+        public FloatExpressionNode(float value)
         {
             this.value = value;
         }
@@ -19,7 +19,7 @@ namespace Helium.parser.nodes
 
         public override VariableType ToTypeRef(ProgramNode program)
         {
-            return VariableType.INTEGER;
+            return VariableType.FLOAT;
         }
     }
 }
