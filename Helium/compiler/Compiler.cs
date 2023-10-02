@@ -9,11 +9,20 @@ namespace Helium.compiler
         {
             string moduleName = program.moduleName;
 
+            string outputPath = program.outputPath;
+
             AssemblyDefinition module = program.Gen();
 
             Console.WriteLine("Emitted IR:");
 
-            module.Write(moduleName + ".exe");
+            if (outputPath == "")
+            {
+                module.Write(moduleName + ".exe");
+            }
+            else
+            {
+                module.Write(outputPath);
+            }
         }
     }
 }

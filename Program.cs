@@ -12,15 +12,21 @@ namespace Helium
     {
         public static void Main(string[] args)
         {
-            List<string> references = new();
+            List<string> referencePaths = new();
             bool needsHelp = false;
+            string outputPath = "";
+            string sourcePath = "";
 
             OptionSet options = new()
             {
                 "Usage: helium <file> [options]",
-                { "r=", "The {path} of an assembly to reference", references.Add },
-                { "?|h|help", v => needsHelp = true }
+                { "r=", "The {path} of an assembly to reference", referencePaths.Add },
+                { "o=", "The output {path} of an assembly to reference", path => outputPath = path },
+                { "h|help", v => needsHelp = true },
+                { "<>", path => sourcePath = path }
             };
+
+            options.Parse(args);
 
             if (needsHelp)
             {
@@ -29,27 +35,25 @@ namespace Helium
                 return;
             }
 
-            if (args.Length == 0)
+            if (sourcePath == "")
             {
                 throw new Exception("Please provide a file to run");
             }
 
-            string path = args[0];
-            path = path.Replace("\\", "/");
-            string name = path.Split("/")[^1].Split(".")[0];
-
-            if (!File.Exists(path))
+            if (!File.Exists(sourcePath))
             {
                 throw new FileNotFoundException("File does not exist");
             }
 
-            string input = File.ReadAllText(path, Encoding.UTF8);
+            string input = File.ReadAllText(sourcePath, Encoding.UTF8);
 
             Lexer lexer = new(input);
             List<Token> tokens = lexer.Lex();
 
             Parser parser = new(tokens, "main");
             ProgramNode programNode = parser.Parse();
+            programNode.referencePaths = referencePaths;
+            programNode.outputPath = outputPath;
 
             Checker checker = new(programNode);
 
