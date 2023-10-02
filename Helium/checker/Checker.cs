@@ -49,7 +49,6 @@ namespace Helium.checker
                 string name = assignmentStatement.name;
                 bool reassigning = assignmentStatement.reassigning;
                 ExpressionNode expression = assignmentStatement.expression;
-                VariableType valueType = expression.ToTypeRef(program);
 
                 if (reassigning)
                 {
@@ -76,7 +75,7 @@ namespace Helium.checker
                     return false;
                 }
 
-                variables.Add(name, expression.ToTypeRef(program));
+                variables.Add(name, expression.ToVariableType(program));
 
                 return true;
             }
@@ -112,15 +111,15 @@ namespace Helium.checker
                     return false;
                 }
 
-                VariableType leftType = binaryExpressionNode.left.ToTypeRef(program);
-                VariableType rightType = binaryExpressionNode.right.ToTypeRef(program);
+                VariableType leftType = binaryExpressionNode.left.ToVariableType(program);
+                VariableType rightType = binaryExpressionNode.right.ToVariableType(program);
 
                 if (leftType == VariableType.NULL || rightType == VariableType.NULL)
                 {
                     return Error("Cannot apply operator '" + binaryExpressionNode.op + "' to types '" + leftType + "' and '" + rightType + "'");
                 }
 
-                if (leftType == VariableType.NULL || rightType == VariableType.NULL)
+                if (leftType == VariableType.BOOLEAN || rightType == VariableType.BOOLEAN)
                 {
                     return Error("Cannot apply operator '" + binaryExpressionNode.op + "' to types '" + leftType + "' and '" + rightType + "'");
                 }

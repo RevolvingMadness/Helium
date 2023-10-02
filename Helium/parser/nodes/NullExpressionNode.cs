@@ -1,5 +1,7 @@
 
 using Helium.compiler;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 namespace Helium.parser.nodes
 {
@@ -10,14 +12,15 @@ namespace Helium.parser.nodes
 
         }
 
-        public override object ToValueRef(ProgramNode program)
+        public override void Emit(ILProcessor processor, ProgramNode program)
         {
-            return new object();
+            processor.Emit(OpCodes.Ldc_I4_0);
         }
 
-        public override VariableType ToTypeRef(ProgramNode program)
+        public override VariableType ToVariableType(ProgramNode program)
         {
-            return VariableType.INTEGER;
+            throw new NotImplementedException();
         }
+
     }
 }

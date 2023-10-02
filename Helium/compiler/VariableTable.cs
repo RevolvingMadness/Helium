@@ -23,7 +23,7 @@ namespace Helium.compiler
                 return;
             }
 
-            object value = expression.ToValueRef(program);
+            object value = expression.ToVariableType(program);
 
             // object variable = program.builder.BuildAlloca((VariableType)type, name);
 
@@ -58,7 +58,7 @@ namespace Helium.compiler
 
                 if (variable.name == name)
                 {
-                    variable.value = expression.ToValueRef(program);
+                    variable.value = expression;
                     // program.builder.BuildStore(variable.value, variable.variableRef);
                 }
             }

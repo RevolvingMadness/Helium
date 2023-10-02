@@ -17,6 +17,7 @@ namespace Helium.parser.nodes
         public readonly Dictionary<VariableType, string> builtinTypes;
         public List<string> referencePaths = new();
         public string outputPath = "";
+        public ExpressionNode? returnValue;
 
         public ProgramNode(string moduleName)
         {
@@ -76,15 +77,22 @@ namespace Helium.parser.nodes
 
             MethodDefinition mainMethod = new(
                 "Main",
-                MethodAttributes.Private | MethodAttributes.Static,
-                builtinTypeReferences[VariableType.VOID]
+                MethodAttributes.Public | MethodAttributes.Static,
+                builtinTypeReferences[VariableType.INTEGER]
             );
 
             ILProcessor processor = mainMethod.Body.GetILProcessor();
 
-            processor.Emit(OpCodes.Ldstr, "Hello, World!");
-            processor.Emit(OpCodes.Call, writeLineMethodReference);
-            processor.Emit(OpCodes.Ret);
+            foreach (StatementNode statement in statements)
+            {
+                statement.Gen(processor, this);
+            }
+
+            if (returnValue == null)
+            {
+                processor.Emit(OpCodes.Ldc_I4, 0);
+                processor.Emit(OpCodes.Ret);
+            }
 
             mainClass.Methods.Add(mainMethod);
 
@@ -95,7 +103,7 @@ namespace Helium.parser.nodes
             return assemblyDefinition;
         }
 
-        private TypeReference GetClassReference(string className)
+        public TypeReference GetClassReference(string className)
         {
             List<TypeDefinition> foundTypes = new();
 
@@ -129,7 +137,7 @@ namespace Helium.parser.nodes
             }
         }
 
-        private MethodReference GetMethodReference(string className, string methodName, List<string> parameterTypeNames)
+        public MethodReference GetMethodReference(string className, string methodName, List<string> parameterTypeNames)
         {
             List<TypeDefinition> foundTypes = new();
 

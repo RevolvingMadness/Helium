@@ -1,3 +1,5 @@
+using Mono.Cecil.Cil;
+
 namespace Helium.parser.nodes
 {
     class AssignmentStatementNode : StatementNode
@@ -13,7 +15,7 @@ namespace Helium.parser.nodes
             this.expression = expression;
         }
 
-        public override void Gen(ProgramNode program)
+        public override void Gen(ILProcessor processor, ProgramNode program)
         {
 
         }

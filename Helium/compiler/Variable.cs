@@ -1,14 +1,17 @@
 
+using Helium.parser.nodes;
+using Mono.Cecil;
+
 namespace Helium.compiler
 {
     class Variable
     {
         public readonly VariableType type;
         public readonly string name;
-        public object value;
+        public ExpressionNode value;
         public readonly object variableRef;
 
-        public Variable(VariableType type, string name, object value, object variableRef)
+        public Variable(VariableType type, string name, ExpressionNode value, object variableRef)
         {
             this.type = type;
             this.name = name;
