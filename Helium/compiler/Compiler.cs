@@ -17,7 +17,11 @@ namespace Helium.compiler
 
             if (outputPath == "")
             {
-                module.Write(moduleName + ".exe");
+                if (OperatingSystem.IsWindows()) {
+                    module.Write(moduleName + ".exe");
+                } else {
+                    module.Write(moduleName);
+                }
             }
             else
             {

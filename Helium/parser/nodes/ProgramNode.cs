@@ -28,8 +28,6 @@ namespace Helium.parser.nodes
 
             assemblyName = new(moduleName, new Version(1, 0, 0));
 
-            AssemblyDefinition.ReadAssembly(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\mscorlib.dll");
-
             assemblyDefinition = AssemblyDefinition.CreateAssembly(
                 assemblyName,
                 moduleName,
@@ -129,11 +127,11 @@ namespace Helium.parser.nodes
             }
             else if (foundTypes.Count == 0)
             {
-                throw new Exception("Cannot find class");
+                throw new Exception("Cannot find class '" + className + "' in any of the referenced assemblies");
             }
             else
             {
-                throw new Exception("Found class in more than 1 module");
+                throw new Exception("Found class '" + className + "' in more than 1 referenced assemblies");
             }
         }
 
