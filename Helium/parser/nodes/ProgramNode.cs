@@ -14,7 +14,7 @@ namespace Helium.parser.nodes
         public readonly AssemblyNameDefinition assemblyName;
         public readonly ModuleDefinition module;
         public readonly VariableTable variables;
-        public readonly Dictionary<VariableType, string> builtinTypes;
+        public Dictionary<VariableType, TypeReference> builtinTypeReferences;
         public List<string> referencePaths = new();
         public string outputPath = "";
         public ExpressionNode? returnValue;
@@ -40,14 +40,7 @@ namespace Helium.parser.nodes
 
             variables = new(this);
 
-            builtinTypes = new()
-            {
-                { VariableType.VOID, "System.Void" },
-                { VariableType.INTEGER, "System.Int32" },
-                { VariableType.STRING, "System.String" },
-                { VariableType.BOOLEAN, "System.Boolean" },
-                { VariableType.OBJECT, "System.Object" },
-            };
+            builtinTypeReferences = new();
         }
 
         public AssemblyDefinition Gen()
@@ -55,16 +48,11 @@ namespace Helium.parser.nodes
             foreach (string referencePath in referencePaths)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Logger.Info("Adding assembly '" + referencePath + "'");
+                Logger.Info("Adding assembly {0}", referencePath);
                 assemblies.Add(AssemblyDefinition.ReadAssembly(referencePath));
             }
 
-            Dictionary<VariableType, TypeReference> builtinTypeReferences = new();
-
-            foreach (KeyValuePair<VariableType, string> entry in builtinTypes)
-            {
-                builtinTypeReferences.Add(entry.Key, GetClassReference(entry.Value));
-            }
+            builtinTypeReferences = GetBuiltinTypeReferences();
 
             MethodReference writeLineMethodReference = GetMethodReference("System.Console", "WriteLine", new() { "System.String" });
 
@@ -103,13 +91,35 @@ namespace Helium.parser.nodes
             return assemblyDefinition;
         }
 
+        private Dictionary<VariableType, TypeReference> GetBuiltinTypeReferences()
+        {
+            Dictionary<VariableType, string> builtinTypeNameMap = new()
+            {
+                { VariableType.VOID, "System.Void" },
+                { VariableType.INTEGER, "System.Int32" },
+                { VariableType.STRING, "System.String" },
+                { VariableType.BOOLEAN, "System.Boolean" },
+                { VariableType.OBJECT, "System.Object" },
+            };
+
+            Dictionary<VariableType, TypeReference> builtinTypeReferences = new();
+
+            foreach (KeyValuePair<VariableType, string> entry in builtinTypeNameMap)
+            {
+                builtinTypeReferences.Add(entry.Key, GetClassReference(entry.Value));
+            }
+
+            return builtinTypeReferences;
+        }
+
+
         public TypeReference GetClassReference(string className)
         {
             List<TypeDefinition> foundTypes = new();
 
             foreach (AssemblyDefinition assembly in assemblies)
             {
-                Logger.Info("Looking for class '" + className + "' in reference '" + assembly.FullName + "'");
+                Logger.Info("Looking for class {0} in reference {1}", className, assembly.FullName);
                 foreach (ModuleDefinition module in assembly.Modules)
                 {
                     foreach (TypeDefinition class_ in module.Types)
@@ -129,11 +139,13 @@ namespace Helium.parser.nodes
             }
             else if (foundTypes.Count == 0)
             {
-                throw new Exception("Cannot find class");
+                Logger.Error("Cannot find class {0}", className);
+                return null;
             }
             else
             {
-                throw new Exception("Found class in more than 1 module");
+                Logger.Error("Found class {0} in more than 1 referenced assemblies", className);
+                return null;
             }
         }
 
@@ -143,7 +155,7 @@ namespace Helium.parser.nodes
 
             foreach (AssemblyDefinition assembly in assemblies)
             {
-                Logger.Info("Looking for method type '" + methodName + "' in assembly '" + assembly.FullName + "'");
+                Logger.Info("Looking for method {0} in assembly {1}", methodName, assembly.FullName);
                 foreach (ModuleDefinition module in assembly.Modules)
                 {
                     foreach (TypeDefinition type in module.Types)
@@ -186,16 +198,19 @@ namespace Helium.parser.nodes
 
                     return module.ImportReference(method);
                 }
-                throw new Exception("Cannot find method '" + methodName + "'");
+
+                Logger.Error("Cannot find method {0}", methodName);
             }
             else if (foundTypes.Count == 0)
             {
-                throw new Exception("Cannot find method '" + methodName + "'");
+                Logger.Error("Cannot find method {0}", methodName);
             }
             else
             {
-                throw new Exception("Found types in more than 1 module");
+                Logger.Error("Found method {0} in more than 1 module", methodName);
             }
+
+            return null;
         }
     }
 }

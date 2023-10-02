@@ -5,7 +5,6 @@ namespace Helium.compiler
         INTEGER,
         FLOAT,
         BOOLEAN,
-        NULL,
         STRING,
         OBJECT,
         VOID

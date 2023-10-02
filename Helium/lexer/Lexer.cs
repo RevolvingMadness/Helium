@@ -1,3 +1,6 @@
+#pragma warning disable CS8625
+using Helium.logger;
+
 namespace Helium.lexer
 {
     class Lexer
@@ -47,17 +50,19 @@ namespace Helium.lexer
                 {
                     if (charMap.ContainsKey(Current()))
                     {
-                        tokens.Add(new Token(charMap.GetValueOrDefault(Consume())));
+                        char chr = Consume();
+
+                        tokens.Add(new Token(charMap.GetValueOrDefault(chr), null));
                     }
                     else
                     {
-                        throw new Exception("Unknown character '" + Current() + "'");
+                        Logger.Error("Unknown character {0}", Current());
                     }
 
                 }
             }
 
-            tokens.Add(new Token(TokenType.EOF));
+            tokens.Add(new Token(TokenType.EOF, null));
 
             return tokens;
         }
@@ -106,10 +111,9 @@ namespace Helium.lexer
 
             return identifier switch
             {
-                "return" => new Token(TokenType.RETURN),
-                "null" => new Token(TokenType.NULL),
-                "true" => new Token(TokenType.TRUE),
-                "false" => new Token(TokenType.FALSE),
+                "return" => new Token(TokenType.RETURN, null),
+                "true" => new Token(TokenType.TRUE, true),
+                "false" => new Token(TokenType.FALSE, false),
                 _ => new Token(TokenType.IDENTIFIER, identifier)
             };
         }

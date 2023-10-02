@@ -1,67 +1,71 @@
+using Helium.logger;
 using Helium.parser.nodes;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 namespace Helium.compiler
 {
     class VariableTable
     {
         private readonly ProgramNode program;
-        private readonly List<Variable> variables;
+        private readonly Dictionary<string, Variable> variables;
+        private int variableIndex;
 
         public VariableTable(ProgramNode program)
         {
             this.program = program;
 
             variables = new();
+
+            variableIndex = 0;
         }
 
-        public void Assign(VariableType? type, string name, ExpressionNode expression)
+        public void Assign(ILProcessor processor, VariableType? type, string name, ExpressionNode expression)
         {
             if (type == null)
             {
-                Reassign(name, expression);
+                Reassign(processor, name, expression);
 
                 return;
             }
 
-            object value = expression.ToVariableType(program);
+            TypeReference typeReference = program.builtinTypeReferences[(VariableType)type];
 
-            // object variable = program.builder.BuildAlloca((VariableType)type, name);
+            VariableDefinition variableDefinition = new(typeReference);
 
-            // program.builder.BuildStore(value, variable);
+            processor.Body.Variables.Add(variableDefinition);
 
-            // variables.Add(new((LLVMTypeRef)type, name, value, variable));
+            expression.Emit(processor, program);
+            processor.Emit(OpCodes.Stloc, variableIndex);
+
+            Variable variable = new((VariableType)type, name, variableIndex);
+
+            variables.Add(name, variable);
+
+            variableIndex++;
+        }
+
+        private void Reassign(ILProcessor processor, string name, ExpressionNode expression)
+        {
+            expression.Emit(processor, program);
+            processor.Emit(OpCodes.Stloc, GetVariableIndex(name));
+        }
+
+        private int GetVariableIndex(string name)
+        {
+            return Get(name).index;
         }
 
         public Variable Get(string name)
         {
-            foreach (Variable variable in variables)
+            Variable? variable = variables.GetValueOrDefault(name);
+
+            if (variable == null)
             {
-                if (variable.name == name)
-                {
-                    return variable;
-                }
+                Logger.Error("{0} is not defined (This should be checked in Checker.cs)", name);
             }
 
-            throw new Exception("This should be checked in Checker.cs");
-        }
-
-        public void Reassign(string name, ExpressionNode expression)
-        {
-            if (expression is NullExpressionNode)
-            {
-                throw new Exception("This should be checked in Checker.cs");
-            }
-
-            for (int i = 0; i < variables.Count; i++)
-            {
-                Variable variable = variables[i];
-
-                if (variable.name == name)
-                {
-                    variable.value = expression;
-                    // program.builder.BuildStore(variable.value, variable.variableRef);
-                }
-            }
+            return variables.GetValueOrDefault(name);
         }
     }
 }

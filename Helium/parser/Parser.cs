@@ -1,5 +1,7 @@
+using Helium.compiler;
 using Helium.helpers;
 using Helium.lexer;
+using Helium.logger;
 using Helium.parser.nodes;
 
 namespace Helium.parser
@@ -68,7 +70,7 @@ namespace Helium.parser
 
             if (token.type != type)
             {
-                throw new Exception("Expected '" + type + "', got '" + token.type + "'");
+                Logger.Error("Expected {0}, got {1}", type, token.type);
             }
 
             return token;
@@ -78,23 +80,16 @@ namespace Helium.parser
         {
             if (Current(TokenType.IDENTIFIER))
             {
-                bool reassigning = true;
+                VariableType? type = null;
 
                 if (Next(TokenType.IDENTIFIER))
                 {
-                    Consume(TokenType.IDENTIFIER);
-                    reassigning = false;
+                    string typeString = (string)Consume(TokenType.IDENTIFIER).value;
+                    type = TypeHelper.FromString(typeString);
                 }
 
-                string name = Consume(TokenType.IDENTIFIER).value as string ?? throw new Exception("Identifier value is null???");
+                string name = Consume(TokenType.IDENTIFIER).value as string ?? throw new Exception();
 
-
-                if (Current(TokenType.SEMICOLON))
-                {
-                    Consume(TokenType.SEMICOLON);
-
-                    return new AssignmentStatementNode(reassigning, name, new NullExpressionNode());
-                }
 
                 Consume(TokenType.EQUALS);
 
@@ -102,7 +97,7 @@ namespace Helium.parser
 
                 Consume(TokenType.SEMICOLON);
 
-                return new AssignmentStatementNode(reassigning, name, expression);
+                return new AssignmentStatementNode(type, name, expression);
             }
             else if (Current(TokenType.RETURN))
             {
@@ -115,7 +110,9 @@ namespace Helium.parser
                 return new ReturnStatementNode(expression);
             }
 
-            throw new Exception("Expected Statement, got '" + Current().type + "'");
+            Logger.Error("Expected Statement, got {0}", Current());
+
+            return null;
         }
 
         private ExpressionNode ParseExpression()
@@ -182,11 +179,6 @@ namespace Helium.parser
                 Consume(TokenType.FALSE);
                 return new BooleanExpressionNode(false);
             }
-            else if (Current(TokenType.NULL))
-            {
-                Consume(TokenType.NULL);
-                return new NullExpressionNode();
-            }
             else if (Current(TokenType.QUOTATIONMARK))
             {
                 Consume(TokenType.QUOTATIONMARK);
@@ -198,7 +190,9 @@ namespace Helium.parser
                 return new StringExpressionNode(str);
             }
 
-            throw new Exception("Expected Expression, got '" + Current().type + "'");
+            Logger.Error("Expected Expression, got {0}", Current().type);
+
+            return null;
         }
 
         private bool Next(TokenType type)

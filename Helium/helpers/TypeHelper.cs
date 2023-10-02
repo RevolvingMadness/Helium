@@ -1,4 +1,5 @@
 using Helium.compiler;
+using Helium.logger;
 
 namespace Helium.parser
 {
@@ -6,14 +7,31 @@ namespace Helium.parser
     {
         public static VariableType FromString(string stringType)
         {
-            return stringType switch
+            VariableType variableType;
+
+            switch (stringType)
             {
-                "int" => VariableType.INTEGER,
-                "float" => VariableType.FLOAT,
-                "boolean" => VariableType.BOOLEAN,
-                "string" => VariableType.STRING,
-                _ => throw new Exception("Unknown type '" + stringType + "'"),
-            };
+                case "int":
+                    variableType = VariableType.INTEGER;
+                    break;
+                case "float":
+                    variableType = VariableType.FLOAT;
+                    break;
+                case "boolean":
+                    variableType = VariableType.BOOLEAN;
+                    break;
+                case "string":
+                    variableType = VariableType.STRING;
+                    break;
+                default:
+                    Logger.Error("Unknown type {0}", stringType);
+
+                    variableType = VariableType.VOID;
+
+                    break;
+            }
+
+            return variableType;
         }
     }
 }

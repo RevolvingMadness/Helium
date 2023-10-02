@@ -1,4 +1,6 @@
+using System.Reflection.Metadata;
 using Helium.compiler;
+using Helium.logger;
 using Helium.parser.nodes;
 
 namespace Helium.checker
@@ -17,9 +19,9 @@ namespace Helium.checker
             errors = new();
         }
 
-        public bool HasNoErrors()
+        public bool HasErrors()
         {
-            return CheckProgram(program);
+            return ProgramHasErrors(program);
         }
 
         public void PrintErrors()
@@ -30,108 +32,118 @@ namespace Helium.checker
             }
         }
 
-        private bool CheckProgram(ProgramNode program)
+        private bool ProgramHasErrors(ProgramNode program)
         {
-            List<bool> statementResults = new();
+            List<bool> statementsHaveErrors = new();
 
             foreach (StatementNode statement in program.statements)
             {
-                statementResults.Add(CheckStatement(statement));
+                statementsHaveErrors.Add(StatementHasErrors(statement));
             }
 
-            return statementResults.All(result => result);
+            return statementsHaveErrors.Any(result => result);
         }
 
-        private bool CheckStatement(StatementNode statement)
+        private bool StatementHasErrors(StatementNode statement)
         {
             if (statement is AssignmentStatementNode assignmentStatement)
             {
-                string name = assignmentStatement.name;
-                bool reassigning = assignmentStatement.reassigning;
-                ExpressionNode expression = assignmentStatement.expression;
-
-                if (reassigning)
-                {
-                    if (expression == null)
-                    {
-                        return Error("Cannot reassign variable '" + name + "' without value");
-                    }
-
-                    if (!variables.ContainsKey(name))
-                    {
-                        return Error("'" + name + "' is not defined");
-                    }
-
-                    return true;
-                }
-
-                if (variables.ContainsKey(name))
-                {
-                    return Error("'" + name + "' is already defined");
-                }
-
-                if (!CheckExpression(expression))
-                {
-                    return false;
-                }
-
-                variables.Add(name, expression.ToVariableType(program));
-
-                return true;
+                return AssignmentStatementHasErrors(assignmentStatement);
             }
             else if (statement is ReturnStatementNode returnStatement)
             {
-                if (!CheckExpression(returnStatement.expression))
+                if (ExpressionHasErrors(returnStatement.expression))
                 {
-                    return false;
+                    return true;
                 }
 
+                return false;
+            }
+
+            Logger.Error("Cannot check node {0}", statement);
+
+            return true;
+        }
+
+        private bool AssignmentStatementHasErrors(AssignmentStatementNode assignmentStatement)
+        {
+            string name = assignmentStatement.name;
+            VariableType? type = assignmentStatement.type;
+            ExpressionNode expression = assignmentStatement.expression;
+
+            if (type == null)
+            {
+                if (expression == null)
+                {
+                    return Error("Cannot reassign variable {0} without value", name);
+                }
+
+                if (!variables.ContainsKey(name))
+                {
+                    return Error("{0} is not defined", name);
+                }
+
+                return false;
+            }
+
+            VariableType expressionType = expression.ToVariableType(program);
+
+            if (type != expressionType)
+            {
+                return Error("Cannot assign variable {0} with type {1} and value type {2}", name, type, expressionType);
+            }
+
+            if (variables.ContainsKey(name))
+            {
+                return Error("{0} is already defined", name);
+            }
+
+            if (ExpressionHasErrors(expression))
+            {
                 return true;
             }
 
-            throw new Exception("Cannot check node '" + statement + "'");
+            variables.Add(name, expression.ToVariableType(program));
+
+            return false;
         }
 
-        private bool CheckExpression(ExpressionNode expression)
+
+        private bool ExpressionHasErrors(ExpressionNode expression)
         {
             if (expression is IdentifierExpressionNode identifierExpression)
             {
                 if (!variables.ContainsKey(identifierExpression.value))
                 {
-                    return Error("'" + identifierExpression.value + "' is not defined");
+                    return Error("{0} is not defined", identifierExpression.value);
                 }
             }
             else if (expression is BinaryExpressionNode binaryExpressionNode)
             {
-                bool leftValid = CheckExpression(binaryExpressionNode.left);
-                bool rightValid = CheckExpression(binaryExpressionNode.right);
+                bool leftExpressionHasErrors = ExpressionHasErrors(binaryExpressionNode.left);
+                bool rightExpressionHasErrors = ExpressionHasErrors(binaryExpressionNode.right);
 
-                if (!(leftValid && rightValid))
+                if (leftExpressionHasErrors || rightExpressionHasErrors)
                 {
-                    return false;
+                    return true;
                 }
 
                 VariableType leftType = binaryExpressionNode.left.ToVariableType(program);
                 VariableType rightType = binaryExpressionNode.right.ToVariableType(program);
 
-                if (leftType == VariableType.NULL || rightType == VariableType.NULL)
-                {
-                    return Error("Cannot apply operator '" + binaryExpressionNode.op + "' to types '" + leftType + "' and '" + rightType + "'");
-                }
-
                 if (leftType == VariableType.BOOLEAN || rightType == VariableType.BOOLEAN)
                 {
-                    return Error("Cannot apply operator '" + binaryExpressionNode.op + "' to types '" + leftType + "' and '" + rightType + "'");
+                    return Error("Cannot apply operator {0} to types {1} and {2}", binaryExpressionNode.op, leftType, rightType);
                 }
             }
 
-            return true;
+            return false;
         }
 
-        private bool Error(string message)
+        private static bool Error(string message, params object[] args)
         {
-            errors.Add(message);
-            return false;
+            Logger.ErrorWithoutExit(message, args);
+            return true;
         }
     }
 }
