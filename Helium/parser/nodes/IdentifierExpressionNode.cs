@@ -14,7 +14,8 @@ namespace Helium.parser.nodes
 
         public override void Emit(ILProcessor processor, ProgramNode program)
         {
-            program.variables.Get(value).value.Emit(processor, program);
+            int indexOfVariable = program.variables.Get(value).index;
+            processor.Emit(OpCodes.Ldloc, indexOfVariable);
         }
 
         public override VariableType ToVariableType(ProgramNode program)

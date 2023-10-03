@@ -13,8 +13,6 @@ namespace Helium.compiler
 
             AssemblyDefinition module = program.Gen();
 
-            Console.WriteLine("Emitted IR:");
-
             if (outputPath == "")
             {
                 if (OperatingSystem.IsWindows()) {

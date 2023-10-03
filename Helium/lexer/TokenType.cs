@@ -16,7 +16,6 @@ namespace Helium.lexer
         TRUE,
         FALSE,
         RETURN,
-        NULL,
         QUOTATIONMARK
     }
 }

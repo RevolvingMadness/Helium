@@ -2,6 +2,7 @@
 using Helium.checker;
 using Helium.compiler;
 using Helium.lexer;
+using Helium.logger;
 using Helium.parser;
 using Helium.parser.nodes;
 using Mono.Options;
@@ -37,12 +38,12 @@ namespace Helium
 
             if (sourcePath == "")
             {
-                throw new Exception("Please provide a file to run");
+                Logger.Error("Please provide a file to run");
             }
 
             if (!File.Exists(sourcePath))
             {
-                throw new FileNotFoundException("File does not exist");
+                Logger.Error("File {0} does not exist", sourcePath);
             }
 
             string input = File.ReadAllText(sourcePath, Encoding.UTF8);
@@ -57,7 +58,7 @@ namespace Helium
 
             Checker checker = new(programNode);
 
-            if (!checker.HasNoErrors())
+            if (checker.HasErrors())
             {
                 checker.PrintErrors();
             }
