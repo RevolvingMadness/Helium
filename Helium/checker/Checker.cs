@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System.Reflection.Metadata;
 using Helium.compiler;
 using Helium.logger;
@@ -33,7 +34,7 @@ namespace Helium.checker
                 statementsHaveErrors.Add(StatementHasErrors(statement));
             }
 
-            return statementsHaveErrors.Any(result => result);
+            return statementsHaveErrors.Any(v => v);
         }
 
         private bool StatementHasErrors(StatementNode statement)
@@ -50,6 +51,14 @@ namespace Helium.checker
                 }
 
                 return false;
+            } else if (statement is FunctionCallStatementNode functionCallStatement) {
+                List<bool> argumentsHaveErrors = new();
+
+                foreach (ExpressionNode expression in functionCallStatement.arguments) {
+                    argumentsHaveErrors.Add(ExpressionHasErrors(expression));
+                }
+
+                return argumentsHaveErrors.Any(v => v);
             }
 
             Logger.Error("Cannot check node {0}", statement);

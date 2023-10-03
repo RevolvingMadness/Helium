@@ -13,7 +13,7 @@ namespace Helium
     {
         public static void Main(string[] args)
         {
-            List<string> referencePaths = new();
+            List<string> assemblyPaths = new();
             bool needsHelp = false;
             string outputPath = "";
             string sourcePath = "";
@@ -21,7 +21,7 @@ namespace Helium
             OptionSet options = new()
             {
                 "Usage: helium <file> [options]",
-                { "r=", "The {path} of an assembly to reference", referencePaths.Add },
+                { "r=", "The {path} of an assembly to reference", assemblyPaths.Add },
                 { "o=", "The output {path} of an assembly to reference", path => outputPath = path },
                 { "h|help", v => needsHelp = true },
                 { "<>", path => sourcePath = path }
@@ -52,9 +52,7 @@ namespace Helium
             List<Token> tokens = lexer.Lex();
 
             Parser parser = new(tokens, "main");
-            ProgramNode programNode = parser.Parse();
-            programNode.referencePaths = referencePaths;
-            programNode.outputPath = outputPath;
+            ProgramNode programNode = parser.Parse(assemblyPaths, outputPath);
 
             Checker checker = new(programNode);
 

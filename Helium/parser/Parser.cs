@@ -18,9 +18,9 @@ namespace Helium.parser
             this.moduleName = moduleName;
         }
 
-        public ProgramNode Parse()
+        public ProgramNode Parse(List<string> assemblyPaths, string outputPath)
         {
-            ProgramNode programNode = new(moduleName);
+            ProgramNode programNode = new(moduleName, assemblyPaths, outputPath);
 
             while (IsNotEOF())
             {
@@ -80,24 +80,12 @@ namespace Helium.parser
         {
             if (Current(TokenType.IDENTIFIER))
             {
-                VariableType? type = null;
-
-                if (Next(TokenType.IDENTIFIER))
+                if (Next(TokenType.LEFT_PARENTHESIS))
                 {
-                    string typeString = (string)Consume(TokenType.IDENTIFIER).value;
-                    type = TypeHelper.FromString(typeString);
+                    return ParseFunctionCallStatement();
                 }
 
-                string name = (string)Consume(TokenType.IDENTIFIER).value;
-
-
-                Consume(TokenType.EQUALS);
-
-                ExpressionNode expression = ParseExpression();
-
-                Consume(TokenType.SEMICOLON);
-
-                return new AssignmentStatementNode(type, name, expression);
+                return ParseVariableAssignment();
             }
             else if (Current(TokenType.RETURN))
             {
@@ -110,9 +98,62 @@ namespace Helium.parser
                 return new ReturnStatementNode(expression);
             }
 
-            Logger.Error("Expected Statement, got {0}", Current());
+            Logger.Error("Expected Statement, got {0}", Current().type);
 
             return null;
+        }
+
+        private StatementNode ParseVariableAssignment()
+        {
+            VariableType? type = null;
+
+            if (Next(TokenType.IDENTIFIER))
+            {
+                string typeString = (string)Consume(TokenType.IDENTIFIER).value;
+                type = TypeHelper.FromString(typeString);
+            }
+
+            string name = (string)Consume(TokenType.IDENTIFIER).value;
+
+
+            Consume(TokenType.EQUALS);
+
+            ExpressionNode expression = ParseExpression();
+
+            Consume(TokenType.SEMICOLON);
+
+            return new AssignmentStatementNode(type, name, expression);
+        }
+
+        private StatementNode ParseFunctionCallStatement()
+        {
+            string name = (string)Consume(TokenType.IDENTIFIER).value;
+
+            Consume(TokenType.LEFT_PARENTHESIS);
+
+            List<ExpressionNode> arguments = ParseArguments();
+            
+            Consume(TokenType.RIGHT_PARENTHESIS);
+
+            Consume(TokenType.SEMICOLON);
+
+            return new FunctionCallStatementNode(name, arguments);
+        }
+
+        private List<ExpressionNode> ParseArguments() {
+            List<ExpressionNode> arguments = new();
+
+            while(true) {
+                arguments.Add(ParseExpression());
+
+                if (Current(TokenType.RIGHT_PARENTHESIS)) {
+                    break;
+                }
+
+                Consume(TokenType.COMMA);
+            }
+
+            return arguments;
         }
 
         private ExpressionNode ParseExpression()
@@ -152,14 +193,14 @@ namespace Helium.parser
             return left;
         }
 
-#pragma warning disable CS8600
-#pragma warning disable CS8604
-#pragma warning disable CS8605
         private ExpressionNode ParsePrimaryExpression()
         {
             if (Current(TokenType.IDENTIFIER))
             {
                 return new IdentifierExpressionNode((string)Consume(TokenType.IDENTIFIER).value);
+            } else if (Current(TokenType.STRING))
+            {
+                return new StringExpressionNode((string)Consume(TokenType.STRING).value);
             }
             else if (Current(TokenType.INTEGER))
             {

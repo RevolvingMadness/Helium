@@ -16,6 +16,10 @@ namespace Helium.lexer
         TRUE,
         FALSE,
         RETURN,
-        QUOTATIONMARK
+        QUOTATIONMARK,
+        RIGHT_PARENTHESIS,
+        LEFT_PARENTHESIS,
+        COMMA,
+        STRING
     }
 }

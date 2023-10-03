@@ -15,16 +15,20 @@ namespace Helium.parser.nodes
         public readonly ModuleDefinition module;
         public readonly VariableTable variables;
         public Dictionary<VariableType, TypeReference> builtinTypeReferences;
-        public List<string> referencePaths = new();
+        public List<string> assemblyPaths = new();
         public string outputPath = "";
         public ExpressionNode? returnValue;
+        public MethodReference writeLineMethodReference;
 
-        public ProgramNode(string moduleName)
+        public ProgramNode(string moduleName, List<string> assemblyPaths, string outputPath)
         {
             statements = new();
             assemblies = new();
 
+            this.assemblyPaths = assemblyPaths;
+            this.outputPath = outputPath;
             this.moduleName = moduleName;
+
 
             assemblyName = new(moduleName, new Version(1, 0, 0));
 
@@ -35,20 +39,16 @@ namespace Helium.parser.nodes
             );
 
             module = assemblyDefinition.MainModule;
-
             variables = new(this);
-
             builtinTypeReferences = new();
+
+            LoadAssemblies();
+
+            writeLineMethodReference = GetMethodReference("System.Console", "WriteLine", new() { "System.String" });
         }
 
         public AssemblyDefinition Gen()
         {
-            foreach (string referencePath in referencePaths)
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Logger.Info("Adding assembly {0}", referencePath);
-                assemblies.Add(AssemblyDefinition.ReadAssembly(referencePath));
-            }
 
             builtinTypeReferences = GetBuiltinTypeReferences();
 
@@ -87,6 +87,16 @@ namespace Helium.parser.nodes
             assemblyDefinition.EntryPoint = mainMethod;
 
             return assemblyDefinition;
+        }
+
+        private void LoadAssemblies()
+        {
+            foreach (string referencePath in assemblyPaths)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Logger.Info("Adding assembly {0}", referencePath);
+                assemblies.Add(AssemblyDefinition.ReadAssembly(referencePath));
+            }
         }
 
         private Dictionary<VariableType, TypeReference> GetBuiltinTypeReferences()

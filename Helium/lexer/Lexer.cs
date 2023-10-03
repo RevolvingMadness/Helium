@@ -25,6 +25,10 @@ namespace Helium.lexer
                 { '"', TokenType.QUOTATIONMARK },
 
                 { ';', TokenType.SEMICOLON },
+                { ',', TokenType.COMMA },
+
+                { '(', TokenType.LEFT_PARENTHESIS },
+                { ')', TokenType.RIGHT_PARENTHESIS },
             };
         }
 
@@ -46,6 +50,10 @@ namespace Helium.lexer
                 {
                     tokens.Add(LexDigit());
                 }
+                else if (Current() == '"')
+                {
+                    tokens.Add(LexString());
+                }
                 else
                 {
                     if (charMap.ContainsKey(Current()))
@@ -65,6 +73,21 @@ namespace Helium.lexer
             tokens.Add(new Token(TokenType.EOF, null));
 
             return tokens;
+        }
+
+        private Token LexString()
+        {
+            string str = "";
+
+            Consume();
+
+            while (Current() != '"') {
+                str += Consume();
+            }
+
+            Consume();
+
+            return new(TokenType.STRING, str);
         }
 
         private Token LexDigit()
