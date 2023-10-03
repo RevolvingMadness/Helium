@@ -88,7 +88,7 @@ namespace Helium.parser
                     type = TypeHelper.FromString(typeString);
                 }
 
-                string name = Consume(TokenType.IDENTIFIER).value as string ?? throw new Exception();
+                string name = (string)Consume(TokenType.IDENTIFIER).value;
 
 
                 Consume(TokenType.EQUALS);

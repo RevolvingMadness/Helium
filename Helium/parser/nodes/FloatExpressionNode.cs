@@ -15,7 +15,7 @@ namespace Helium.parser.nodes
 
         public override void Emit(ILProcessor processor, ProgramNode program)
         {
-            throw new NotImplementedException();
+            processor.Emit(OpCodes.Ldc_R4, value);
         }
 
         public override VariableType ToVariableType(ProgramNode program)
