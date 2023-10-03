@@ -58,11 +58,7 @@ namespace Helium
 
             Checker checker = new(programNode);
 
-            if (checker.HasErrors())
-            {
-                checker.PrintErrors();
-            }
-            else
+            if (!checker.HasErrors())
             {
                 Compiler.Compile(programNode);
             }

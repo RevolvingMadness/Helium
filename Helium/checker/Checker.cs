@@ -24,14 +24,6 @@ namespace Helium.checker
             return ProgramHasErrors(program);
         }
 
-        public void PrintErrors()
-        {
-            foreach (string error in errors)
-            {
-                Console.WriteLine(error);
-            }
-        }
-
         private bool ProgramHasErrors(ProgramNode program)
         {
             List<bool> statementsHaveErrors = new();
