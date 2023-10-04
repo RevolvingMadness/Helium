@@ -1,6 +1,9 @@
+using Helium.logger;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace Helium.parser.nodes {
+namespace Helium.parser.nodes
+{
     class FunctionCallStatementNode : StatementNode
     {
         public readonly string name;
@@ -14,16 +17,19 @@ namespace Helium.parser.nodes {
 
         public override void Gen(ILProcessor processor, ProgramNode program)
         {
-            if (name == "print") {
-                foreach (ExpressionNode argument in arguments) {
-                    argument.Emit(processor, program);
-                }
+            if (program.variables.Get(name).typeReference != program.variables.Get("function").typeReference)
+            {
+                Logger.Error("{0} is not a function", name);
+            };
 
-                processor.Emit(OpCodes.Call, program.writeLineMethodReference);
-                return;
+            foreach (ExpressionNode argument in arguments)
+            {
+                argument.Emit(processor, program);
             }
 
-            throw new NotImplementedException();
+            processor.Emit(OpCodes.Ldstr, name);
+
+            processor.Emit(OpCodes.Call);
         }
     }
 }

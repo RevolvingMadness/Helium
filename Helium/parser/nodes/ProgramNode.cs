@@ -14,11 +14,9 @@ namespace Helium.parser.nodes
         public readonly AssemblyNameDefinition assemblyName;
         public readonly ModuleDefinition module;
         public readonly VariableTable variables;
-        public Dictionary<VariableType, TypeReference> builtinTypeReferences;
         public List<string> assemblyPaths = new();
         public string outputPath = "";
         public ExpressionNode? returnValue;
-        public MethodReference writeLineMethodReference;
 
         public ProgramNode(string moduleName, List<string> assemblyPaths, string outputPath)
         {
@@ -28,7 +26,6 @@ namespace Helium.parser.nodes
             this.assemblyPaths = assemblyPaths;
             this.outputPath = outputPath;
             this.moduleName = moduleName;
-
 
             assemblyName = new(moduleName, new Version(1, 0, 0));
 
@@ -40,31 +37,23 @@ namespace Helium.parser.nodes
 
             module = assemblyDefinition.MainModule;
             variables = new(this);
-            builtinTypeReferences = new();
 
             LoadAssemblies();
-
-            writeLineMethodReference = GetMethodReference("System.Console", "WriteLine", new() { "System.String" });
         }
 
         public AssemblyDefinition Gen()
         {
-
-            builtinTypeReferences = GetBuiltinTypeReferences();
-
-            MethodReference writeLineMethodReference = GetMethodReference("System.Console", "WriteLine", new() { "System.String" });
-
             TypeDefinition mainClass = new(
                 "",
                 "Program",
                 TypeAttributes.Abstract | TypeAttributes.Sealed,
-                builtinTypeReferences[VariableType.OBJECT]
+                variables.Get("object").typeReference
             );
 
             MethodDefinition mainMethod = new(
                 "Main",
                 MethodAttributes.Public | MethodAttributes.Static,
-                builtinTypeReferences[VariableType.INTEGER]
+                variables.Get("int").typeReference
             );
 
             ILProcessor processor = mainMethod.Body.GetILProcessor();
@@ -97,27 +86,6 @@ namespace Helium.parser.nodes
                 Logger.Info("Adding assembly {0}", referencePath);
                 assemblies.Add(AssemblyDefinition.ReadAssembly(referencePath));
             }
-        }
-
-        private Dictionary<VariableType, TypeReference> GetBuiltinTypeReferences()
-        {
-            Dictionary<VariableType, string> builtinTypeNameMap = new()
-            {
-                { VariableType.VOID, "System.Void" },
-                { VariableType.INTEGER, "System.Int32" },
-                { VariableType.STRING, "System.String" },
-                { VariableType.BOOLEAN, "System.Boolean" },
-                { VariableType.OBJECT, "System.Object" },
-            };
-
-            Dictionary<VariableType, TypeReference> builtinTypeReferences = new();
-
-            foreach (KeyValuePair<VariableType, string> entry in builtinTypeNameMap)
-            {
-                builtinTypeReferences.Add(entry.Key, GetClassReference(entry.Value));
-            }
-
-            return builtinTypeReferences;
         }
 
 

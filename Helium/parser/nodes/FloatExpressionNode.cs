@@ -1,5 +1,6 @@
 
 using Helium.compiler;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace Helium.parser.nodes
@@ -18,9 +19,9 @@ namespace Helium.parser.nodes
             processor.Emit(OpCodes.Ldc_R4, value);
         }
 
-        public override VariableType ToVariableType(ProgramNode program)
+        public override string ToTypeString(ProgramNode program)
         {
-            return VariableType.FLOAT;
+            return "float";
         }
     }
 }

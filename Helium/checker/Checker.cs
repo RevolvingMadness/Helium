@@ -1,23 +1,20 @@
-using System.Linq.Expressions;
-using System.Reflection.Metadata;
 using Helium.compiler;
 using Helium.logger;
 using Helium.parser.nodes;
+using Mono.Cecil;
 
 namespace Helium.checker
 {
     class Checker
     {
-        private readonly Dictionary<string, VariableType> variables;
+        private readonly Dictionary<string, string> variableTypes;
         private readonly ProgramNode program;
-        private readonly List<string> errors;
 
         public Checker(ProgramNode program)
         {
             this.program = program;
 
-            variables = new();
-            errors = new();
+            variableTypes = new();
         }
 
         public bool HasErrors()
@@ -51,10 +48,13 @@ namespace Helium.checker
                 }
 
                 return false;
-            } else if (statement is FunctionCallStatementNode functionCallStatement) {
+            }
+            else if (statement is FunctionCallStatementNode functionCallStatement)
+            {
                 List<bool> argumentsHaveErrors = new();
 
-                foreach (ExpressionNode expression in functionCallStatement.arguments) {
+                foreach (ExpressionNode expression in functionCallStatement.arguments)
+                {
                     argumentsHaveErrors.Add(ExpressionHasErrors(expression));
                 }
 
@@ -69,7 +69,7 @@ namespace Helium.checker
         private bool AssignmentStatementHasErrors(AssignmentStatementNode assignmentStatement)
         {
             string name = assignmentStatement.name;
-            VariableType? type = assignmentStatement.type;
+            string? type = assignmentStatement.type;
             ExpressionNode expression = assignmentStatement.expression;
 
             if (type == null)
@@ -79,7 +79,7 @@ namespace Helium.checker
                     return Error("Cannot reassign variable {0} without value", name);
                 }
 
-                if (!variables.ContainsKey(name))
+                if (!variableTypes.ContainsKey(name))
                 {
                     return Error("{0} is not defined", name);
                 }
@@ -87,14 +87,18 @@ namespace Helium.checker
                 return false;
             }
 
-            VariableType expressionType = expression.ToVariableType(program);
+            TypeReference typeReference = program.variables.Get(type).typeReference;
 
-            if (type != expressionType)
+            string expressionType = expression.ToTypeString(program);
+
+            TypeReference expressionTypeReference = program.variables.Get(type).typeReference;
+
+            if (typeReference != expressionTypeReference)
             {
                 return Error("Cannot assign variable {0} with type {1} and value type {2}", name, type, expressionType);
             }
 
-            if (variables.ContainsKey(name))
+            if (variableTypes.ContainsKey(name))
             {
                 return Error("{0} is already defined", name);
             }
@@ -104,7 +108,7 @@ namespace Helium.checker
                 return true;
             }
 
-            variables.Add(name, expression.ToVariableType(program));
+            variableTypes.Add(name, expression.ToTypeString(program));
 
             return false;
         }
@@ -114,7 +118,7 @@ namespace Helium.checker
         {
             if (expression is IdentifierExpressionNode identifierExpression)
             {
-                if (!variables.ContainsKey(identifierExpression.value))
+                if (!variableTypes.ContainsKey(identifierExpression.value))
                 {
                     return Error("{0} is not defined", identifierExpression.value);
                 }
@@ -129,10 +133,10 @@ namespace Helium.checker
                     return true;
                 }
 
-                VariableType leftType = binaryExpressionNode.left.ToVariableType(program);
-                VariableType rightType = binaryExpressionNode.right.ToVariableType(program);
+                string leftType = binaryExpressionNode.left.ToTypeString(program);
+                string rightType = binaryExpressionNode.right.ToTypeString(program);
 
-                if (leftType == VariableType.BOOLEAN || rightType == VariableType.BOOLEAN)
+                if (leftType == "bool" || rightType == "bool")
                 {
                     return Error("Cannot apply operator {0} to types {1} and {2}", binaryExpressionNode.op, leftType, rightType);
                 }

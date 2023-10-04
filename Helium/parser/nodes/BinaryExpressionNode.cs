@@ -1,7 +1,7 @@
-using Helium.compiler;
 using Helium.helpers;
 using Helium.lexer;
 using Helium.logger;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace Helium.parser.nodes
@@ -9,10 +9,10 @@ namespace Helium.parser.nodes
     class BinaryExpressionNode : ExpressionNode
     {
         public readonly ExpressionNode left;
-        public readonly TokenType op;
+        public readonly lexer.TokenType op;
         public readonly ExpressionNode right;
 
-        public BinaryExpressionNode(ExpressionNode left, TokenType op, ExpressionNode right)
+        public BinaryExpressionNode(ExpressionNode left, lexer.TokenType op, ExpressionNode right)
         {
             this.left = left;
             this.op = op;
@@ -26,20 +26,20 @@ namespace Helium.parser.nodes
             processor.Emit(TokenTypeHelper.ToOpCode(op));
         }
 
-        public override VariableType ToVariableType(ProgramNode program)
+        public override string ToTypeString(ProgramNode program)
         {
-            VariableType leftType = left.ToVariableType(program);
-            VariableType rightType = right.ToVariableType(program);
+            string leftType = left.ToTypeString(program);
+            string rightType = right.ToTypeString(program);
 
-            List<VariableType> typePrecedence = new() {
-                VariableType.BOOLEAN,
-                VariableType.VOID,
-                VariableType.STRING,
-                VariableType.FLOAT,
-                VariableType.INTEGER,
+            List<string> typePrecedence = new() {
+                "bool",
+                "void",
+                "string",
+                "float",
+                "int"
             };
 
-            foreach (VariableType type in typePrecedence)
+            foreach (string type in typePrecedence)
             {
                 if (leftType == type || rightType == type)
                 {
@@ -49,7 +49,7 @@ namespace Helium.parser.nodes
 
             Logger.Error("Unsupported types {0} and/or {1}", leftType, rightType);
 
-            return VariableType.VOID;
+            return "";
         }
     }
 }

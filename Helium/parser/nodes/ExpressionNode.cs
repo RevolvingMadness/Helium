@@ -1,5 +1,5 @@
 
-using Helium.compiler;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace Helium.parser.nodes
@@ -8,6 +8,6 @@ namespace Helium.parser.nodes
     {
         public abstract void Emit(ILProcessor processor, ProgramNode program);
 
-        public abstract VariableType ToVariableType(ProgramNode program);
+        public abstract string ToTypeString(ProgramNode program);
     }
 }

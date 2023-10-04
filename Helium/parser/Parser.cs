@@ -105,12 +105,11 @@ namespace Helium.parser
 
         private StatementNode ParseVariableAssignment()
         {
-            VariableType? type = null;
+            string? type = null;
 
             if (Next(TokenType.IDENTIFIER))
             {
-                string typeString = (string)Consume(TokenType.IDENTIFIER).value;
-                type = TypeHelper.FromString(typeString);
+                type = (string)Consume(TokenType.IDENTIFIER).value;
             }
 
             string name = (string)Consume(TokenType.IDENTIFIER).value;
@@ -132,7 +131,7 @@ namespace Helium.parser
             Consume(TokenType.LEFT_PARENTHESIS);
 
             List<ExpressionNode> arguments = ParseArguments();
-            
+
             Consume(TokenType.RIGHT_PARENTHESIS);
 
             Consume(TokenType.SEMICOLON);
@@ -140,13 +139,16 @@ namespace Helium.parser
             return new FunctionCallStatementNode(name, arguments);
         }
 
-        private List<ExpressionNode> ParseArguments() {
+        private List<ExpressionNode> ParseArguments()
+        {
             List<ExpressionNode> arguments = new();
 
-            while(true) {
+            while (true)
+            {
                 arguments.Add(ParseExpression());
 
-                if (Current(TokenType.RIGHT_PARENTHESIS)) {
+                if (Current(TokenType.RIGHT_PARENTHESIS))
+                {
                     break;
                 }
 
@@ -198,7 +200,8 @@ namespace Helium.parser
             if (Current(TokenType.IDENTIFIER))
             {
                 return new IdentifierExpressionNode((string)Consume(TokenType.IDENTIFIER).value);
-            } else if (Current(TokenType.STRING))
+            }
+            else if (Current(TokenType.STRING))
             {
                 return new StringExpressionNode((string)Consume(TokenType.STRING).value);
             }

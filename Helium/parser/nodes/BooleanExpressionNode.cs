@@ -1,5 +1,5 @@
 
-using Helium.compiler;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace Helium.parser.nodes
@@ -18,9 +18,9 @@ namespace Helium.parser.nodes
             processor.Emit(value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
         }
 
-        public override VariableType ToVariableType(ProgramNode program)
+        public override string ToTypeString(ProgramNode program)
         {
-            return VariableType.BOOLEAN;
+            return "bool";
         }
     }
 }

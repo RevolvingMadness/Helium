@@ -20,7 +20,7 @@ namespace Helium.compiler
             variableIndex = 0;
         }
 
-        public void Assign(ILProcessor processor, VariableType? type, string name, ExpressionNode expression)
+        public void Assign(ILProcessor processor, string? type, string name, ExpressionNode expression)
         {
             if (type == null)
             {
@@ -29,7 +29,7 @@ namespace Helium.compiler
                 return;
             }
 
-            TypeReference typeReference = program.builtinTypeReferences[(VariableType)type];
+            TypeReference typeReference = program.variables.Get(type).typeReference;
 
             VariableDefinition variableDefinition = new(typeReference);
 
@@ -38,7 +38,7 @@ namespace Helium.compiler
             expression.Emit(processor, program);
             processor.Emit(OpCodes.Stloc, variableIndex);
 
-            Variable variable = new((VariableType)type, name, variableIndex);
+            Variable variable = new(typeReference, type, name, variableIndex);
 
             variables.Add(name, variable);
 
@@ -54,6 +54,27 @@ namespace Helium.compiler
         private int GetVariableIndex(string name)
         {
             return Get(name).index;
+        }
+
+        private void AddBuiltinClasses()
+        {
+            Dictionary<string, string> builtinClassesMap = new()
+            {
+                { "void", "System.Void" },
+                { "int", "System.Int32" },
+                { "string", "System.String" },
+                { "boolean", "System.Boolean" },
+                { "object", "System.Object" },
+                { "function", "System.Func" },
+            };
+
+            foreach (KeyValuePair<string, string> entry in builtinClassesMap)
+            {
+                TypeReference classReference = program.GetClassReference(entry.Key);
+                variables.Add(entry.Key, new(classReference, entry.Key, entry.Key, variableIndex));
+
+                variableIndex++;
+            }
         }
 
         public Variable Get(string name)
